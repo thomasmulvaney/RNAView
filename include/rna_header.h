@@ -602,5 +602,3 @@ void multiplets(long num_ple, long max_ple, long num_residue,
                 double **xyz, double **orien, double **org, long **seidx,
                 char *bseq, FILE *fp,
                 long *num_multi, long *multi_idx, long **multi);
-
-

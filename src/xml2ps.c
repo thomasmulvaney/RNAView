@@ -2485,10 +2485,8 @@ void xml_xy4ps(long num, double **xy, double ps_size, long n)
 void ps_head(long *bbox)
 {
     char str[256];
-    char *ps_image_par = get_data_file("ps_image.par");
     long i;
     time_t run_time;
-    FILE *fpp;
 
     /*
         long i;
@@ -2571,7 +2569,7 @@ void ps_head(long *bbox)
     fprintf(psfile, "/Times-Bold findfont %d  scalefont setfont\n\n", PSPIONT);
 
 
-    FILE *fpp = check_open(ps_image_par, "routine:ps_head");
+    FILE *fpp = open_data_file("ps_image.par", "routine:ps_head");
 
     while (fgets(str, sizeof str, fpp) != NULL)
     {

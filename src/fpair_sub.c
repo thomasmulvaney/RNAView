@@ -1357,8 +1357,7 @@ long get_round(double d)
 
 void ps_title_cmds(FILE *fp, char *imgfile, long *bbox)
 {
-    char BDIR[BUF512], str[BUF512];
-    char *ps_image_par = "ps_image.par";
+    char str[BUF512];
     long i, j;
     time_t run_time;
 
@@ -1390,10 +1389,9 @@ void ps_title_cmds(FILE *fp, char *imgfile, long *bbox)
                 "     lineto lineto lineto closepath} bind def\n");
 
     /* read in color parameter file */
-    char *filename = get_data_file(ps_image_par);
     /*printf( " ...... reading file: %s ...... \n", ps_image_par);*/
 
-    FILE *fpp = check_open(filename, "ps_title_cmds");
+    FILE *fpp = open_data_file("ps_image.par", "ps_title_cmds");
 
     if (fgets(str, sizeof str, fpp) == NULL) /* skip one line */
         nrerror("error in reading comment line");
@@ -1840,8 +1838,7 @@ void hb_crt_alt(double *HB_UPPER, char *HB_ATOM, char *ALT_LIST)
     char str[BUF512];
 
     /* read in H-bond length upper limit */
-    char *filename = get_data_file(PAR_FILE);
-    FILE *fp = check_open(filename, "hb_crt_alt");
+    FILE *fp = open_data_file(PAR_FILE, "hb_crt_alt");
 
     if ((fgets(str, sizeof str, fp) == NULL) ||
         (sscanf(str, "%lf %lf %s %s",
@@ -1988,9 +1985,7 @@ void base_info(long num_residue, char *bseq, long **seidx, long *RY,
                ResSeq, Miscs, xyz, SHARE_DIR, orien, org);
 
     /* read in base-pair criteria parameters */
-    char *filename = get_data_file(PAR_FILE);
-
-    FILE *fpar = check_open(filename,"routine:base_info");
+    FILE *fpar = open_data_file(PAR_FILE, "routine:base_info");
 
     /* printf( " ...... reading file: %s ...... \n", PAR_FILE);*/
     for (i = 1; i <= 6; i++)

@@ -46,3 +46,7 @@ char* get_data_file(char *filename) {
   get_default_data_file(filename);
   return PATH_BUFFER;
 }
+
+FILE *open_data_file(char *filename, char *err) {
+  return check_open(get_data_file(filename), err);
+}

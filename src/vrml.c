@@ -447,8 +447,7 @@ void label_residue(long j, long **chain_idx, double **C4xyz, char **resnam)
 static void vrml_start_plot(void)
 {
     char str[BUF512];
-    char *ps_image_par = get_data_file("vrml_image.par");
-    FILE *fpp = check_open(ps_image_par, "vrml_start_plot");
+    FILE *fpp = open_data_file("vrml_image.par", "vrml_start_plot");
 
     vrml_header();
 
