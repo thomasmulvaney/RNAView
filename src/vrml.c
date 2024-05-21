@@ -448,15 +448,9 @@ static void vrml_start_plot(void)
 {
     char str[BUF512];
     char *ps_image_par = get_data_file("vrml_image.par");
-    FILE *fpp;
+    FILE *fpp = check_open(ps_image_par, "vrml_start_plot");
 
     vrml_header();
-    fpp = fopen(ps_image_par, "r");
-    if (fpp == NULL)
-    {
-      printf("I can not open file %s\n", ps_image_par);
-        exit(0);
-    }
 
     while (fgets(str, sizeof str, fpp) != NULL)
     {

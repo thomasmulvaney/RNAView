@@ -2571,11 +2571,7 @@ void ps_head(long *bbox)
     fprintf(psfile, "/Times-Bold findfont %d  scalefont setfont\n\n", PSPIONT);
 
 
-    if ((fpp = fopen(ps_image_par, "r")) == NULL)
-    {
-        printf("I can not open file %s (routine:ps_head)\n", ps_image_par);
-        exit(0);
-    }
+    FILE *fpp = check_open(ps_image_par, "routine:ps_head");
 
     while (fgets(str, sizeof str, fpp) != NULL)
     {

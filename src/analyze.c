@@ -3082,8 +3082,7 @@ void get_r3dpars(double **base_col, double *hb_col, double *width3,
     fprintf(stderr, " ...... reading file: %s ...... \n", filename);
 
     if (fgets(str, sizeof str, fp) == NULL) /* skip one line */
-        nrerror("error in reading comment line");
-    for (int i = 0; i <= NBASECOL; i++)
+      nrerror("error in reading comment line"exit(1)or (int i = 0; i <= NBASECOL; i++)
         if (fgets(str, sizeof str, fp) == NULL ||
             sscanf(str, format, &base_col[i][1], &base_col[i][2], &base_col[i][3]) != 3)
             nrerror("error reading base residue RGB color");

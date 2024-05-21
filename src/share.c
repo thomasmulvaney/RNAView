@@ -4,6 +4,17 @@
 #include <ctype.h>
 #include "share.h"
 
+FILE *check_open(char *filename, char *error) {
+  FILE *fp = fopen(filename, "r");
+    if (fp == NULL)
+    {
+      printf("Cannot open file: %s (%s)", filename, error);
+      exit(1);
+    }
+    return fp;
+}
+
+
 char PATH_BUFFER[512];
 
 /* Check if the file is in the current directory.

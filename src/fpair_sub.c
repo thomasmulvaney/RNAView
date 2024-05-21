@@ -184,14 +184,8 @@ long number_of_atoms(char *pdbfile)
 {
     char str[BUF512];
     long n = 0, nlen;
-    FILE *fp;
 
-    if ((fp = fopen(pdbfile, "r")) == NULL)
-    {
-        printf("Can not open the file %s (routine: number_of_atoms)\n", pdbfile);
-        return 0;
-    }
-
+    FILE *fp = check_open(pdbfile, "number_of_atoms");
     while (fgets(str, sizeof str, fp) != NULL)
     {
         nlen = upperstr(str);
@@ -218,13 +212,8 @@ long read_pdb(char *pdbfile, char **AtomName, char **ResName, char *ChainID,
     char str[BUF512], temp[BUF512], *pchar, str_id[20], str_id0[20];
     long i, n, nlen;
     char atomname[5], resname[4], chainid, resseq[5];
-    FILE *fp;
 
-    if ((fp = fopen(pdbfile, "r")) == NULL)
-    {
-        printf("Can not open the file %s (routine: read_pdb)\n", pdbfile);
-        return 0;
-    }
+    FILE *fp = check_open(pdbfile, "read_pdb");
 
     n = 1;
     while (fgets(str, sizeof str, fp) != NULL)
@@ -1372,7 +1361,6 @@ void ps_title_cmds(FILE *fp, char *imgfile, long *bbox)
     char *ps_image_par = "ps_image.par";
     long i, j;
     time_t run_time;
-    FILE *fpp;
 
     run_time = time(NULL);
 
@@ -1405,11 +1393,7 @@ void ps_title_cmds(FILE *fp, char *imgfile, long *bbox)
     char *filename = get_data_file(ps_image_par);
     /*printf( " ...... reading file: %s ...... \n", ps_image_par);*/
 
-    if ((fpp = fopen(filename, "r")) == NULL)
-    {
-        printf("I can not open file %s (routine:ps_title_cmds)\n", BDIR);
-        exit(0);
-    }
+    FILE *fpp = check_open(filename, "ps_title_cmds");
 
     if (fgets(str, sizeof str, fpp) == NULL) /* skip one line */
         nrerror("error in reading comment line");
@@ -1827,13 +1811,8 @@ long read_pdb_ref(char *pdbfile, char **sAtomName, double **sxyz)
 {
     char str[BUF512], temp[BUF512];
     long n = 0;
-    FILE *fp;
 
-    if ((fp = fopen(pdbfile, "r")) == NULL)
-    {
-        printf("Can not open the file %s (routine: read_pdb_ref)\n", pdbfile);
-        return 0;
-    }
+    FILE *fp = check_open(pdbfile, "read_pdb_ref");
 
     while (fgets(str, sizeof str, fp) != NULL)
     {
@@ -1859,15 +1838,10 @@ void hb_crt_alt(double *HB_UPPER, char *HB_ATOM, char *ALT_LIST)
 /* read in H-bond length upper limit etc from <misc_3dna.par> */
 {
     char str[BUF512];
-    FILE *fp;
 
     /* read in H-bond length upper limit */
     char *filename = get_data_file(PAR_FILE);
-    if ((fp = fopen(filename, "r")) == NULL)
-    {
-        printf("I can not open file %s (routine:hb_crt_alt)\n", filename);
-        exit(0);
-    }
+    FILE *fp = check_open(filename, "hb_crt_alt");
 
     if ((fgets(str, sizeof str, fp) == NULL) ||
         (sscanf(str, "%lf %lf %s %s",
@@ -2008,7 +1982,6 @@ void base_info(long num_residue, char *bseq, long **seidx, long *RY,
 {
     char str[BUF512];
     long i, ib, ie, j, k;
-    FILE *fpar;
 
     /* get the reference frame for each base */
     base_frame(num_residue, bseq, seidx, RY, AtomName, ResName, ChainID,
@@ -2017,11 +1990,7 @@ void base_info(long num_residue, char *bseq, long **seidx, long *RY,
     /* read in base-pair criteria parameters */
     char *filename = get_data_file(PAR_FILE);
 
-    if ((fpar = fopen(filename, "r")) == NULL)
-    {
-        printf("I can not open file %s (routine:base_info)\n", SHARE_DIR);
-        exit(0);
-    }
+    FILE *fpar = check_open(filename,"routine:base_info");
 
     /* printf( " ...... reading file: %s ...... \n", PAR_FILE);*/
     for (i = 1; i <= 6; i++)
