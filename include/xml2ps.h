@@ -16,8 +16,6 @@ void get_xyz_coord(FILE *inp, double *x, double *y, double *z);
 
 void read_O3prime_P_xyz(char *inpfile, double **o3_prime_xyz, double **p_xyz, long *npo3);
 
-void get_BDIR(char *BDIR, char *parfile);
-
 void get_chain(long nres, double **a, double **b, long *nchain, long **chain_idx);
 
 void link_chain(long nchain, long **chain_idx, double **xy, long *broken);

@@ -16,39 +16,29 @@ The software has been tested in Linux and UNIX (SGI), MAC, SUN systems
 
 You can install the program in any directory.
 
-1. unpack the program package in the desired directory (e.g. /?/?/?/ ).
+1. get RNAView.
 
     ```
-    zcat  RNAVIEW.tar.gz | tar xvf -
+	git clone https://github.com/rcsb/rnaview
     ```
 
-2. install the program
+2. install the program to the default prefix (`/usr/local`).
 
     ```
-    cd /?/?/?/RNAVIEW/
+    cd rnaview
     make
+	sudo make install
     ```
 
-    The executable file rnaview will be in the directory /?/?/?/RNAVIEW/bin/.
-
-3. Define RNAVIEW environment variable to point to the installation directory (e.g. /?/?/?/RNAVIEW)
-   Add the following command to your shell script
-
-    For C shell users:
+    To change the installation location (eg. to somewhere controlled by the user such as `~/local`) set the prefix:
 
     ```
-     setenv RNAVIEW /?/?/?/RNAVIEW
-     setenv PATH "/?/?/?/RNAVIEW/bin:"$PATH
-    ```
+    cd rnaview
+    make PREFIX=$HOME/local
+	sudo make install PREFIX=$HOME/local
+	```
 
-    For Bourne shell users:
-
-    ```
-    RNAVIEW=/?/?/?/RNA/RNAVIEW; export RNAVIEW
-    PATH="/?/?/?/RNAVIEW/bin:"$PATH; export PATH
-    ```
-
-4. To test the program, go to /?/?/?/RNAVIEW/test
+3. To test the program, run:
 
     ```
     rnaview -p tr0001.pdb

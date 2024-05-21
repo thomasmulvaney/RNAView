@@ -2120,7 +2120,7 @@ void xml_xy4ps(long num, double **xy, double ps_size, long n)
 
 void ps_head(long *bbox)
 {
-    char BDIR[256], str[256];
+    char str[256];
     char *ps_image_par = "ps_image.par";
     long i;
     time_t run_time;

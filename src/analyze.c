@@ -5,6 +5,7 @@
 #include <time.h>
 #include "nrutil.h"
 #include "rna.h"
+#include "share.h"
 extern struct
 {
     char sAtomNam[20][4];
@@ -1010,7 +1011,7 @@ void ref_frames(long ds, long num_bp, long **pair_num, char **bp_seq,
         {" C4 ", " N3 ", " C2 ", " N1 ", " C6 ", " C5 ", " N7 ", " C8 ",
          " N9 "};
     // Changed size of sidmsg from 512 to 600
-    char hlx_c, BDIR[BUF512], idmsg[BUF512], sidmsg[600], spdb[BUF512];
+    char hlx_c, idmsg[BUF512], sidmsg[600], spdb[BUF512];
     char **sAtomName;
 
     double orgi[4], vz[4];
@@ -1018,8 +1019,6 @@ void ref_frames(long ds, long num_bp, long **pair_num, char **bp_seq,
 
     long i, ii, jj, ib, ie, ik, j, k, m, rnum, RingAtom_num;
     long exp_katom, ioffset3, ioffset9, nmatch, snum, std_katom;
-
-    get_BDIR(BDIR, "Atomic_A.pdb");
 
     sAtomName = cmatrix(1, 20, 0, 4);
 
@@ -3075,19 +3074,16 @@ void get_r3dpars(double **base_col, double *hb_col, double *width3,
                  double **atom_col, char *label_style)
 /* read in parameters for Raster3D input */
 {
-    char BDIR[BUF512], str[BUF512], *raster3d_par = "raster3d.par";
     char *format = "%lf %lf %lf", *format4 = "%lf %lf %lf %lf";
-    long i;
-    FILE *fp;
+    char str[BUF512];
 
-    get_BDIR(BDIR, raster3d_par);
-    strcat(BDIR, raster3d_par);
-    fp = open_file(BDIR, "r");
-    fprintf(stderr, " ...... reading file: %s ...... \n", raster3d_par);
+    char *filename = get_data_file("raster3d.par");
+    FILE *fp = open_file(filename, "r");
+    fprintf(stderr, " ...... reading file: %s ...... \n", filename);
 
     if (fgets(str, sizeof str, fp) == NULL) /* skip one line */
         nrerror("error in reading comment line");
-    for (i = 0; i <= NBASECOL; i++)
+    for (int i = 0; i <= NBASECOL; i++)
         if (fgets(str, sizeof str, fp) == NULL ||
             sscanf(str, format, &base_col[i][1], &base_col[i][2], &base_col[i][3]) != 3)
             nrerror("error reading base residue RGB color");
@@ -3103,7 +3099,7 @@ void get_r3dpars(double **base_col, double *hb_col, double *width3,
         nrerror("error cylinder radius for bp-center line & bp 1 & 2");
     if (fgets(str, sizeof str, fp) == NULL) /* skip one line */
         nrerror("error in reading comment line");
-    for (i = 0; i <= NATOMCOL; i++)
+    for (int i = 0; i <= NATOMCOL; i++)
         if (fgets(str, sizeof str, fp) == NULL ||
             sscanf(str, format, &atom_col[i][1], &atom_col[i][2], &atom_col[i][3]) != 3)
             nrerror("error reading atom RGB color");

@@ -292,7 +292,6 @@ double dot2ang(double dotval);
 double magang(double *va, double *vb);
 double rad2deg(double ang);
 double deg2rad(double ang);
-void get_BDIR(char *BDIR, char *filename);
 void check_slash(char *BDIR);
 void copy_matrix(double **a, long nr, long nc, double **o);
 void multi_vec_matrix(double *a, long n, double **b, long nr, long nc, double *o);
@@ -603,3 +602,5 @@ void multiplets(long num_ple, long max_ple, long num_residue,
                 double **xyz, double **orien, double **org, long **seidx,
                 char *bseq, FILE *fp,
                 long *num_multi, long *multi_idx, long **multi);
+
+

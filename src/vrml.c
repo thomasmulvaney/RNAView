@@ -9,6 +9,7 @@
 #include "rna.h"
 #include "nrutil.h"
 #include "vrml.h"
+#include "share.h"
 #define CHECK                                \
     if (indent_flag && buflen >= max_buflen) \
     vrml_newline()
@@ -445,18 +446,15 @@ void label_residue(long j, long **chain_idx, double **C4xyz, char **resnam)
 
 static void vrml_start_plot(void)
 {
-    char BDIR[BUF512], str[BUF512];
-    char *ps_image_par = "vrml_image.par";
+    char str[BUF512];
+    char *ps_image_par = get_data_file("vrml_image.par");
     FILE *fpp;
 
     vrml_header();
-    get_BDIR(BDIR, ps_image_par);
-
-    strcat(BDIR, ps_image_par);
-    fpp = fopen(BDIR, "r");
+    fpp = fopen(ps_image_par, "r");
     if (fpp == NULL)
     {
-        printf("I can not open file %s\n", BDIR);
+      printf("I can not open file %s\n", ps_image_par);
         exit(0);
     }
 

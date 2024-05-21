@@ -1,6 +1,7 @@
-CC        = cc
+CC     = cc
 
-
+# By default we install into /usr/local
+PREFIX = /usr/local
 
 #----------------------------------------------------------------------------
 # Project specific path defintions.
@@ -21,96 +22,36 @@ LINCLUDES      =  -I$(INCL)
 #----------------------------------------------------------------------------
 RNAVIEW    = $(BIN)/rnaview
 
-SRCFILES = $(SRC)/rnaview.c \
-           $(SRC)/fpair.c  \
-           $(SRC)/fpair_sub.c  \
-           $(SRC)/pair_type.c  \
-           $(SRC)/nrutil.c  \
-           $(SRC)/ps-xy.c  \
-           $(SRC)/ps-xy-sub.c  \
-           $(SRC)/vrml.c  \
-           $(SRC)/rnaxml-new.c  \
-           $(SRC)/analyze.c   \
-           $(SRC)/pattern.c  \
-           $(SRC)/xml2ps.c  \
-           $(SRC)/multiple.c \
-           $(SRC)/statistics.c
+HFILES = $(wildcard $(INCL)/*.h)
+SRCFILES = $(wildcard $(SRC)/*.c)
 
+# Every C file should be made into and Object file.
+OBJ_FILES = $(patsubst $(SRC)/%.c, $(OBJ)/%.o, $(SRCFILES))
 
-HFILES = $(INCL)/rna.h $(INCL)/nrutil.h $(INCL)/rna_header.h \
-	$(INCL)/vrml.h $(INCL)/xml2ps.h
+# Rule to compile source to object.
+$(OBJ)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -c -o $@ $^
 
-
-OBJ_FILE = $(OBJ)/rnaview.o \
-           $(OBJ)/fpair.o  \
-           $(OBJ)/fpair_sub.o  \
-           $(OBJ)/pair_type.o  \
-           $(OBJ)/nrutil.o  \
-           $(OBJ)/ps-xy.o  \
-           $(OBJ)/ps-xy-sub.o  \
-           $(OBJ)/vrml.o  \
-           $(OBJ)/rnaxml-new.o  \
-           $(OBJ)/analyze.o   \
-           $(OBJ)/pattern.o  \
-           $(OBJ)/xml2ps.o  \
-           $(OBJ)/multiple.o \
-           $(OBJ)/statistics.o
 
 all: $(RNAVIEW)
 
-CFLAGS  =  $(LINCLUDES) 
+install: $(RNAVIEW)
+	mkdir -p $(PREFIX)/bin
+	mkdir -p $(PREFIX)/share/RNAVIEW
+	cp bin/rnaview $(PREFIX)/bin/rnaview
+	cp -r BASEPARS $(PREFIX)/share/RNAVIEW/
 
-$(RNAVIEW) : $(HFILES) $(OBJ_FILE) 
-	$(CC) -g -Wall $(CFLAGS) -o $@ $(OBJ_FILE) $(LDFLAGS) -lm $(MALLOCLIB)
+CFLAGS  = -g -Wall  $(LINCLUDES) -DPREFIX='"$(PREFIX)"'
+LDFLAGS = -lm
 
 
-
-$(OBJ)/rnaview.o : $(SRC)/rnaview.c 
-	$(CC) -g -Wall $(CFLAGS) -c $(SRC)/rnaview.c -o $@
-
-$(OBJ)/fpair.o : src/fpair.c 
-	$(CC) -g -Wall $(CFLAGS) -c $(SRC)/fpair.c -o $@
-
-$(OBJ)/fpair_sub.o : $(SRC)/fpair_sub.c
-	$(CC) -g -Wall $(CFLAGS) -c $(SRC)/fpair_sub.c -o $@
-
-$(OBJ)/pair_type.o : $(SRC)/pair_type.c 
-	$(CC) -g -Wall $(CFLAGS) -c $(SRC)/pair_type.c -o $@
-
-$(OBJ)/nrutil.o : $(SRC)/nrutil.c 
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/nrutil.c -o $@
-
-$(OBJ)/ps-xy.o  : $(SRC)/ps-xy.c 
-	$(CC) -g -Wall $(CFLAGS) -c $(SRC)/ps-xy.c -o $@
-
-$(OBJ)/ps-xy-sub.o  : $(SRC)/ps-xy-sub.c 
-	$(CC) -g -Wall $(CFLAGS) -c $(SRC)/ps-xy-sub.c -o $@
-
-$(OBJ)/vrml.o : $(SRC)/vrml.c 
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/vrml.c -o $@
-
-$(OBJ)/rnaxml-new.o : $(SRC)/rnaxml-new.c 
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/rnaxml-new.c -o $@
-
-$(OBJ)/analyze.o :  $(SRC)/analyze.c 
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/analyze.c -o $@
-
-$(OBJ)/pattern.o :  $(SRC)/pattern.c 
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/pattern.c -o $@
-
-$(OBJ)/xml2ps.o :  $(SRC)/xml2ps.c 
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/xml2ps.c -o $@
-
-$(OBJ)/multiple.o :  $(SRC)/multiple.c
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/multiple.c -o $@
-
-$(OBJ)/statistics.o :  $(SRC)/statistics.c 
-	$(CC) -g -Wall $(CFLAGS) -c  $(SRC)/statistics.c -o $@
+$(RNAVIEW): $(OBJ_FILES) 
+	$(CC) $(CFLAGS) $(MALLOCLIB) -o $@ $^ $(LDFLAGS)
 
 
 clean:
-	@rm -f $(OBJ)/*.o
-	@rm -f $(ALLTARGETS)
+	@rm -f $(OBJ_FILES)
+	@rm -f $(RNAVIEW)
 
 export:
 	mkdir -p $(EXPORT_DIR)

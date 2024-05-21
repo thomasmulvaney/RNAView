@@ -20,6 +20,7 @@ the chains.
 #include <time.h>
 #include "xml2ps.h"
 #include "nrutil.h"
+#include "share.h"
 #define XBIG 1.0e+18
 #define FALSE 0
 #define TRUE 1
@@ -2483,8 +2484,8 @@ void xml_xy4ps(long num, double **xy, double ps_size, long n)
 
 void ps_head(long *bbox)
 {
-    char BDIR[256], str[256];
-    char *ps_image_par = "ps_image.par";
+    char str[256];
+    char *ps_image_par = get_data_file("ps_image.par");
     long i;
     time_t run_time;
     FILE *fpp;
@@ -2569,12 +2570,10 @@ void ps_head(long *bbox)
     /* set default font */
     fprintf(psfile, "/Times-Bold findfont %d  scalefont setfont\n\n", PSPIONT);
 
-    get_BDIR(BDIR, ps_image_par);
-    strcat(BDIR, ps_image_par);
 
-    if ((fpp = fopen(BDIR, "r")) == NULL)
+    if ((fpp = fopen(ps_image_par, "r")) == NULL)
     {
-        printf("I can not open file %s (routine:ps_head)\n", BDIR);
+        printf("I can not open file %s (routine:ps_head)\n", ps_image_par);
         exit(0);
     }
 

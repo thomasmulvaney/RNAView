@@ -7,8 +7,8 @@
 #include <time.h>
 #include "nrutil.h"
 #include "rna.h"
-char *getenv(const char *name);
-extern long HETA;
+#include "share.h"
+long HETA;
 
 struct
 {
@@ -53,8 +53,8 @@ void get_reference_pdb(char *BDIR)
 
     for (i = 0; i < 7; i++)
     { /* read the reference pdb files */
-        sprintf(spdb, "%sAtomic_%c.pdb", BDIR, ref[i]);
-        snum = read_pdb_ref(spdb, sAtomName, sx);
+        sprintf(spdb, "Atomic_%c.pdb", ref[i]);
+        snum = read_pdb_ref(get_data_file(spdb), sAtomName, sx);
         std[i].sNatom = snum;
         for (j = 1; j <= snum; j++)
         {
@@ -869,61 +869,6 @@ double deg2rad(double ang)
     return ang * PI / 180.0;
 }
 
-void get_BDIR(char *BDIR, char *filename)
-/* search the directory containing standard bases & parameter files:
-   (1) current directory
-   (2) directory defined by the environmental variable "RNAVIEW"
-   (3) standard directory $HOME/RNAVIEW/BASEPARS/
-   Note: to use (2), you must set your .cshrc so that you have the env.
-   setenv RNAVIEW /home/hyang/rna/RNAVIEW where RNAVIEW is the
-   directory containning the RNAVIEW director.
-
-*/
-{
-    char *temp;
-    long iscd = 0;
-    FILE *fp;
-
-    fp = fopen(filename, "r"); /* check current directory */
-    if (fp != NULL)
-    {
-        iscd = 1;
-        fclose(fp);
-    }
-
-    if (iscd)
-        strcpy(BDIR, "./"); /* (1)current directory*/
-    else if ((temp = getenv("RNAVIEW")) != NULL)
-    { /*(2)directory of variable RNAVIEW */
-        strcpy(BDIR, temp);
-        check_slash(BDIR);
-        strcat(BDIR, "/BASEPARS/");
-    }
-    else if ((temp = getenv("HOME")) != NULL || /*(3)home unix! default */
-             (temp = getenv("HOMEDRIVE")) != NULL)
-    { /* PC! */
-        strcpy(BDIR, temp);
-        check_slash(BDIR);
-        strcat(BDIR, "RNAVIEW/BASEPARS/");
-    }
-    else
-        nrerror("cannot locate base geometry and parameter files(routine:get_BDIR)");
-}
-
-void check_slash(char *BDIR)
-/* check if '/' exist at the end of the original BDIR */
-{
-    char *pchar;
-    long n;
-
-    pchar = strrchr(BDIR, '/');
-    n = strlen(BDIR);
-    if (pchar - BDIR != n - 1)
-    {
-        BDIR[n] = '/';
-        BDIR[n + 1] = '\0';
-    }
-}
 
 void copy_matrix(double **a, long nr, long nc, double **o)
 {
@@ -1457,11 +1402,10 @@ void ps_title_cmds(FILE *fp, char *imgfile, long *bbox)
                 "     lineto lineto lineto closepath} bind def\n");
 
     /* read in color parameter file */
-    get_BDIR(BDIR, ps_image_par);
-    strcat(BDIR, ps_image_par);
+    char *filename = get_data_file(ps_image_par);
     /*printf( " ...... reading file: %s ...... \n", ps_image_par);*/
 
-    if ((fpp = fopen(BDIR, "r")) == NULL)
+    if ((fpp = fopen(filename, "r")) == NULL)
     {
         printf("I can not open file %s (routine:ps_title_cmds)\n", BDIR);
         exit(0);
@@ -1814,7 +1758,7 @@ void base_frame(long num_residue, char *bseq, long **seidx, long *RY,
     fitted_xyz = dmatrix(1, 9, 1, 3);
     R = dmatrix(1, 3, 1, 3);
 
-    get_reference_pdb(BDIR);
+    get_reference_pdb(SHARE_DIR);
 
     for (i = 1; i <= num_residue; i++)
     {
@@ -1914,17 +1858,14 @@ long read_pdb_ref(char *pdbfile, char **sAtomName, double **sxyz)
 void hb_crt_alt(double *HB_UPPER, char *HB_ATOM, char *ALT_LIST)
 /* read in H-bond length upper limit etc from <misc_3dna.par> */
 {
-    char BDIR[BUF512], str[BUF512];
+    char str[BUF512];
     FILE *fp;
 
     /* read in H-bond length upper limit */
-    get_BDIR(BDIR, PAR_FILE);
-    strcat(BDIR, PAR_FILE);
-    /*       printf( " ...... reading file: %s ...... \n", PAR_FILE); */
-
-    if ((fp = fopen(BDIR, "r")) == NULL)
+    char *filename = get_data_file(PAR_FILE);
+    if ((fp = fopen(filename, "r")) == NULL)
     {
-        printf("I can not open file %s (routine:hb_crt_alt)\n", BDIR);
+        printf("I can not open file %s (routine:hb_crt_alt)\n", filename);
         exit(0);
     }
 
@@ -2065,24 +2006,20 @@ void base_info(long num_residue, char *bseq, long **seidx, long *RY,
                double **org, double **Nxyz, double **o3_p, double *BPRS)
 /* get base information for locating possible pairs later */
 {
-    char BDIR[BUF512], str[BUF512];
+    char str[BUF512];
     long i, ib, ie, j, k;
     FILE *fpar;
 
-    get_BDIR(BDIR, "Atomic_A.pdb");
-
     /* get the reference frame for each base */
     base_frame(num_residue, bseq, seidx, RY, AtomName, ResName, ChainID,
-               ResSeq, Miscs, xyz, BDIR, orien, org);
+               ResSeq, Miscs, xyz, SHARE_DIR, orien, org);
 
     /* read in base-pair criteria parameters */
-    get_BDIR(BDIR, PAR_FILE);
-    strcat(BDIR, PAR_FILE);
-    fpar = fopen(BDIR, "r");
+    char *filename = get_data_file(PAR_FILE);
 
-    if ((fpar = fopen(BDIR, "r")) == NULL)
+    if ((fpar = fopen(filename, "r")) == NULL)
     {
-        printf("I can not open file %s (routine:base_info)\n", BDIR);
+        printf("I can not open file %s (routine:base_info)\n", SHARE_DIR);
         exit(0);
     }
 
